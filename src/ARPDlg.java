@@ -350,18 +350,18 @@ public class ARPDlg extends JFrame implements BaseLayer {
       JPanel routePannel = new JPanel();
       routePannel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Static Routing Table",
             TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-      routePannel.setBounds(10, 380, 360, 280);
+      routePannel.setBounds(10, 380, 360, 260);
       contentPane.add(routePannel);
       routePannel.setLayout(null);
 
       JPanel routerTableEditorPanel = new JPanel();// chatting write panel
-      routerTableEditorPanel.setBounds(10, 15, 340, 260);
+      routerTableEditorPanel.setBounds(10, 15, 340, 235);
       routePannel.add(routerTableEditorPanel);
       routerTableEditorPanel.setLayout(null);
 
       routerTableArea = new JTextArea();
       routerTableArea.setEditable(false);
-      routerTableArea.setBounds(0, 0, 340, 250);
+      routerTableArea.setBounds(0, 0, 340, 240);
       routerTableEditorPanel.add(routerTableArea);// chatting edit
 
 
@@ -372,7 +372,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
       JPanel routerAddPanel = new JPanel();// router add panel
       routerAddPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Add Routing Table",
             TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-      routerAddPanel.setBounds(380, 380, 350, 270);
+      routerAddPanel.setBounds(380, 380, 350, 250);
       
       routerAddPanel.setLayout(null);
 
