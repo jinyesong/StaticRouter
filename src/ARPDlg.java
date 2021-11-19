@@ -160,7 +160,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
         	if (gateway.isSelected()) {
         		gatewayIsChecked = "1";
         	}
-        	if (gateway.isSelected()) {
+        	if (host.isSelected()) {
         		hostIsChecked = "1";
         	}
         	
