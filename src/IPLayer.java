@@ -5,6 +5,7 @@ public class IPLayer implements BaseLayer {
 	public String pLayerName = null;
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
+	public RoutingTable RT = new RoutingTable();
 	
 	private class _IP_ADDR {
 		private byte[] addr = new byte[4];
@@ -88,12 +89,19 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 	
-	public void ARPSend(byte[] src, byte[] dst) {
-		this.SetIpSrcAddress(src);
-		this.SetIpDstAddress(dst);
-		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
+//	public void ARPSend(byte[] src, byte[] dst) {
+//		this.SetIpSrcAddress(src);
+//		this.SetIpDstAddress(dst);
+//		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
+//	}
+	
+	public void addRoutingTable(byte[] dst, byte[] netmask, byte[] gateway, byte[] flag, byte[] itf) {
+		this.RT.add(dst, netmask, gateway, flag, itf);
 	}
 	
+	public void removeRoutingTable() {
+		
+	}
 //	public byte[] ObjToByte(_IP_HEADER Header, byte[] input, int length) {//data
 //		byte[] buf = new byte[length + 14];
 //		for(int i = 0; i < 4; i++) {
