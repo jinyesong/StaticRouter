@@ -64,7 +64,7 @@
    - destination IP는 ARP cache table에서 찾고 없으면 ARP 메시지로 Gateway의 Mac 주소를 알아온다. 그 후 패킷을 전달한다.  
      이때 ARP request의 target ip = destination ip 주소(host2 ip)
 6. 두 주소가 일치하는 entry가 여러 개일 경우, 긴 match 주소로.
-   - ex) 192.168.20.19의 경우 entry(192.168.0.0/16 or 192.168.20.16) 두 entry 중 긴 주소로.
+   - ex) 192.168.20.19의 경우 entry(192.168.0.0/16 or 192.168.20.16/28) 두 entry 중 긴 주소로.
 
 ### 주의사항
 
