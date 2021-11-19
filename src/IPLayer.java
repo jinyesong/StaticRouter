@@ -5,6 +5,7 @@ public class IPLayer implements BaseLayer {
 	public String pLayerName = null;
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
+	public RoutingTable RT = new RoutingTable();
 	
 	private class _IP_ADDR {
 		private byte[] addr = new byte[4];
@@ -18,14 +19,14 @@ public class IPLayer implements BaseLayer {
 	}
 
 	private class _IP_HEADER {
-		byte ip_verlen;
-		byte ip_tos;
-		byte[] ip_len;
-		byte[] ip_id;
-		byte[] ip_fragoff;
-		byte ip_ttl;
-		byte ip_proto;
-		byte[] ip_cksum;
+		byte ip_verlen;		// 가변적인 header의 길이
+		byte ip_tos;		// 서비스의 우선순위
+		byte[] ip_len;		// 전체 ip 패킷의 길이
+		byte[] ip_id;		// 데이터의 조각화된 패킷을 구분
+		byte[] ip_fragoff;	// 단편화된 패킷의 원래 위치 표현
+		byte ip_ttl;		// 패킷 전송 시 거칠 수 있는 hop 수(router 수)
+		byte ip_proto;		// 상위 프로토콜
+		byte[] ip_cksum;	
 		_IP_ADDR ip_src;
 		_IP_ADDR ip_dst;
 		byte[] ip_data;
@@ -88,12 +89,19 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 	
-	public void ARPSend(byte[] src, byte[] dst) {
-		this.SetIpSrcAddress(src);
-		this.SetIpDstAddress(dst);
-		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
+//	public void ARPSend(byte[] src, byte[] dst) {
+//		this.SetIpSrcAddress(src);
+//		this.SetIpDstAddress(dst);
+//		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
+//	}
+	
+	public void addRoutingTable(byte[] dst, byte[] netmask, byte[] gateway, byte[] flag, byte[] itf) {
+		this.RT.add(dst, netmask, gateway, flag, itf);
 	}
 	
+	public void removeRoutingTable() {
+		
+	}
 //	public byte[] ObjToByte(_IP_HEADER Header, byte[] input, int length) {//data
 //		byte[] buf = new byte[length + 14];
 //		for(int i = 0; i < 4; i++) {
