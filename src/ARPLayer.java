@@ -136,6 +136,32 @@ public class ARPLayer implements BaseLayer {
 		return false;
 	}
 
+	public byte[] checkCacheTable(byte[] input) { //목적지의 ip주소와 맞는 mac주소 존재하는지 확인 -> 있으면 mac주소 return
+		byte[] ip_buf = new byte[4]; //목적지 ip주소
+		byte[] ip_src_buf = new byte[4];
+		byte[] mac_buf = new byte[6];
+	    for(int i=0; i<4; i++) {   
+	       ip_buf[i] = input[24+i]; //input의 ip주소 buffer 임시저장
+	    }
+	    boolean hasIP = false;
+	    for(int i=0; i<cacheTable.size(); i++) {
+	    	if(java.util.Arrays.equals(ip_buf, cacheTable.get(i).get(0))) { //cacheTable에 ip주소가 존재
+	        hasIP = true;
+	        mac_buf = cacheTable.get(i).get(1);
+	      }
+	    }
+	    if(hasIP) {
+	    	return mac_buf;
+	    }
+	    else {
+	    	for(int i=0; i<4; i++) {
+	    		ip_src_buf[i] = input[14+i];
+	    	}
+	    	ARPSend(ip_src_buf, ip_buf); //ARP request
+	    	return ip_buf;
+	    }
+	}
+	
 	public boolean addCacheTable(byte[] input){//cache table setting
 	      ArrayList<byte[]> cache = new ArrayList<byte[]>();
 	      //proxycacheTable dlg에서 proxy가져오기 
@@ -278,16 +304,14 @@ public class ARPLayer implements BaseLayer {
 					((ARPDlg) ARPDlg.m_LayerMgr.GetLayer("GUI")).setArpCache(cacheTable);
 					}
 				}
-			
-
 			return true;
 		} else if (ARP_Request == 2) { // ARP Reply
 			System.out.println("arp receive reply");
-
 			// sender의 ARP Layer가 받음.
 			// ARP messgae target's mac보고 sender는 table 채움.
 			// ip, mac변수에 setting -> Dlg에서 get해서 화면에 출력
 			addCacheTable(input);
+			//reply받으면 IPLayer로 Mac주소 전달 -> IPLayer에서 패킷 전달
 			
 			return true;
 		}

@@ -96,8 +96,15 @@ public class IPLayer implements BaseLayer {
 	}
 	
 	public byte[] subnetting(byte[] dst_ip, byte[] netmask) {
-		return;
-	}
+	      byte[] network_address = new byte[4];
+	      for(int i = 0; i < 4; i++) {
+	         network_address[i] = (byte) (dst_ip[i] & netmask[i]);
+	      }
+	      //System.out.println(Byte.toUnsignedInt(dst_ip[0]) + "." + Byte.toUnsignedInt(dst_ip[1]) + "." + Byte.toUnsignedInt(dst_ip[2])  + "." + Byte.toUnsignedInt(dst_ip[3]));
+	      //System.out.println(Byte.toUnsignedInt(netmask[0]) + "." + Byte.toUnsignedInt(netmask[1]) + "." + Byte.toUnsignedInt(netmask[2])  + "." + Byte.toUnsignedInt(netmask[3]));
+	      //System.out.println(Byte.toUnsignedInt(network_address[0]) + "." + Byte.toUnsignedInt(network_address[1]) + "." + Byte.toUnsignedInt(network_address[2])  + "." + Byte.toUnsignedInt(network_address[3]));
+	      return network_address;
+	   }
 	
 	public void receive(byte[] input) {
 		byte[] dst_ip = new byte[4];
