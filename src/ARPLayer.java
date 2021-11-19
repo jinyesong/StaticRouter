@@ -137,6 +137,7 @@ public class ARPLayer implements BaseLayer {
 	}
 
 	public byte[] checkCacheTable(byte[] input) { //목적지의 ip주소와 맞는 mac주소 존재하는지 확인 -> 있으면 mac주소 return
+		//input: 전송 IPpacket의 ARP packet부분에서 목적지 mac주소만 빠진 것
 		byte[] ip_buf = new byte[4]; //목적지 ip주소
 		byte[] ip_src_buf = new byte[4];
 		byte[] mac_buf = new byte[6];
