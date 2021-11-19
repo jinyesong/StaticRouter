@@ -89,19 +89,36 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 	
-//	public void ARPSend(byte[] src, byte[] dst) {
-//		this.SetIpSrcAddress(src);
-//		this.SetIpDstAddress(dst);
-//		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
-//	}
+	public void ARPSend(byte[] src, byte[] dst) {
+		this.SetIpSrcAddress(src);
+		this.SetIpDstAddress(dst);
+		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
+	}
+	
+	public byte[] subnetting(byte[] dst_ip, byte[] netmask) {
+		return;
+	}
+	
+	public void receive(byte[] input) {
+		byte[] dst_ip = new byte[4];
+		System.arraycopy(input, 16, dst_ip, 0, 4);
+		
+		for(int i=0; i < RT.size(); i++) {
+			
+		}
+	}
+	
+	
+	
 	
 	public void addRoutingTable(byte[] dst, byte[] netmask, byte[] gateway, byte[] flag, byte[] itf) {
 		this.RT.add(dst, netmask, gateway, flag, itf);
 	}
 	
 	public void removeRoutingTable() {
-		
+		this.RT.remove();
 	}
+	
 //	public byte[] ObjToByte(_IP_HEADER Header, byte[] input, int length) {//data
 //		byte[] buf = new byte[length + 14];
 //		for(int i = 0; i < 4; i++) {

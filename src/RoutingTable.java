@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class RoutingTable {
 	public ArrayList<ArrayList<byte[]>> routingTable = new ArrayList<ArrayList<byte[]>>();
@@ -13,9 +14,13 @@ public class RoutingTable {
 		this.routingTable.add(item);
 	}
 	public void remove() { // rounting table 삭제
-		
+		routingTable.remove(routingTable.size()-1);
 	}
-	public void getter() { // 일치하는 gateway 반환
-		
+	public ArrayList<byte[]> getEntry(int idx) { // 일치하는 gateway 반환
+		return this.routingTable.get(idx);
+	}
+	
+	public int size() {
+		return this.routingTable.size();
 	}
 }
