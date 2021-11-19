@@ -91,11 +91,11 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 	
-	public void ARPSend(byte[] src, byte[] dst) {
-		this.SetIpSrcAddress(src);
-		this.SetIpDstAddress(dst);
-		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
-	}
+//	public void ARPSend(byte[] src, byte[] dst) {
+//		this.SetIpSrcAddress(src);
+//		this.SetIpDstAddress(dst);
+//		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
+//	}
 	
 	public byte[] subnetting(byte[] dst_ip, byte[] netmask) {
 	      byte[] network_address = new byte[4];
@@ -157,15 +157,15 @@ public class IPLayer implements BaseLayer {
 	public void send() { //패킷 송신
 		
 	}
-	
+
 	public void addRoutingTable(byte[] dst, byte[] netmask, byte[] gateway, byte[] flag, byte[] itf) {
 		this.RT.add(dst, netmask, gateway, flag, itf);
+		subnetting(dst, netmask);
 	}
 	
 	public void removeRoutingTable() {
-		this.RT.remove();
+		
 	}
-	
 //	public byte[] ObjToByte(_IP_HEADER Header, byte[] input, int length) {//data
 //		byte[] buf = new byte[length + 14];
 //		for(int i = 0; i < 4; i++) {
