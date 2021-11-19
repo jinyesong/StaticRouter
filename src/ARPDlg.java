@@ -79,6 +79,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
    JButton routeAddButton;
 
    static JComboBox<String> NICComboBox;
+   static JComboBox<String> NICComboBox2;
 
    int adapterNumber = 0;
    byte[] srcIPNumber, dstIPNumber, srcMacNumber;
@@ -118,47 +119,8 @@ public class ARPDlg extends JFrame implements BaseLayer {
                srcMacAddress.setEnabled(true);
                srcIpAddress.setEnabled(true);
             } else {
-               byte[] MacAddress = new byte[6];
-               byte[] IpAddress = new byte[4];
-
-               String srcMac = srcMacAddress.getText();
-               String srcIP = srcIpAddress.getText();
-               System.out.println("srcMacAddress : " + srcMac);
-               System.out.println("srcIPAddress : " + srcIP);
-
-               String[] byte_srcMac = srcMac.split("-");
-               for (int i = 0; i < 6; i++) {
-                  MacAddress[i] = (byte) Integer.parseInt(byte_srcMac[i], 16);
-               }
-
-               String[] byte_srcIp = srcIP.split("\\.");
-               for (int i = 0; i < 4; i++) {
-                  IpAddress[i] = (byte) Integer.parseInt(byte_srcIp[i]);
-               }
-
-               srcIPNumber = IpAddress;
-               srcMacNumber = MacAddress;
-               
-               String[] dstMac = {"ff","ff","ff","ff","ff","ff"};
-               byte[] dstMacAddress = new byte[6];
-               
-               for (int i = 0; i < 6; i++) {
-                  dstMacAddress[i] = (byte) Integer.parseInt(dstMac[i], 16);
-               }
-               
-               ((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).SetEnetSrcAddress(MacAddress);
-               ((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).SetEnetDstAddress(dstMacAddress);
-               
-               ((ARPLayer)m_LayerMgr.GetLayer("ARP")).SetArpSrcAddress(MacAddress);
-               ((ARPLayer)m_LayerMgr.GetLayer("ARP")).SetArpDstAddress(dstMacAddress);
-               ((ARPLayer)m_LayerMgr.GetLayer("ARP")).SetIpSrcAddress(IpAddress);
-               System.out.println("ARPDlg에서 IPAddress는? " + Byte.toUnsignedInt(IpAddress[2]) +"."+Byte.toUnsignedInt(IpAddress[3]));
                
                ((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(adapterNumber);
-
-               Setting_Button.setText("Reset");
-               srcMacAddress.setEnabled(false);
-               srcIpAddress.setEnabled(false);
 
             }
          }
@@ -177,38 +139,6 @@ public class ARPDlg extends JFrame implements BaseLayer {
                dstIPNumber = dstIPAddress;
                ((TCPLayer) m_LayerMgr.GetLayer("TCP")).ARPSend(srcIPNumber, dstIPNumber);
                
-            }
-         }
-         // proxy ARP 전송
-         if (e.getSource() == proxyAddButton) {
-            //proxy Add 
-            if (proxyAddButton.getText() == "Add") {
-               String proxyDevice = proxyDeviceWrite.getText();
-               String proxyIP = proxyIpWrite.getText();
-               String proxyMac = proxyMacWrite.getText();
-               proxyArpArea.append("Interface0");
-               proxyArpArea.append("  " + proxyIP);
-               proxyArpArea.append("  " + proxyMac + "\n");
-               
-               byte[] proxyInterfaceByte = new byte[1];
-               byte[] proxyIpByte = new byte[4];
-               byte[] proxyMacByte = new byte[6];
-               String[] ip_split = proxyIP.split("\\.");
-               for (int i = 0; i < 4; i++) {
-                  proxyIpByte[i] = (byte) Integer.parseInt(ip_split[i], 10);
-               }
-               
-               String[] mac_split = proxyMac.split("-");
-               for (int i = 0; i < 6; i++) {
-                  proxyMacByte[i] = (byte) Integer.parseInt(mac_split[i], 16);
-               }
-               
-               proxyInterfaceByte[0] = (byte)Integer.parseInt("1");
-               ((ARPLayer)m_LayerMgr.GetLayer("ARP")).addProxyTable(proxyInterfaceByte, proxyIpByte, proxyMacByte);
-            }
-            //proxy Delete 
-            else if(proxyAddButton.getText() == "Delete") {
-               //Delete 구현 
             }
          }
          
@@ -242,7 +172,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
 
       setTitle("Packet_Send_Test");
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      setBounds(250, 250, 750, 700);
+      setBounds(250, 250, 755, 700);
       contentPane = new JPanel();
       ((JComponent) contentPane).setBorder(new EmptyBorder(5, 5, 5, 5));
       setContentPane(contentPane);
@@ -288,64 +218,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
       dstIpSendButton.setBounds(285, 300, 70, 20);
       arpCachePanel.add(dstIpSendButton);
 
-      // proxy arp entry panel
-      JPanel proxyArpPanel = new JPanel();
-      proxyArpPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Proxy Arp Entry",
-            TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-      proxyArpPanel.setBounds(380, 5, 350, 370);
-      contentPane.add(proxyArpPanel);
-      proxyArpPanel.setLayout(null);
-
-      JPanel proxyEditorPanel = new JPanel();// proxy editor panel
-      proxyEditorPanel.setBounds(5, 15, 330, 160);
-      proxyArpPanel.add(proxyEditorPanel);
-      proxyEditorPanel.setLayout(null);
-
-      proxyArpArea = new JTextArea();
-      proxyArpArea.setEditable(false);
-      proxyArpArea.setBounds(5, 5, 420, 150);
-      proxyEditorPanel.add(proxyArpArea);// proxy arp entry
-
-      JPanel proxyInputPanel = new JPanel();
-      proxyInputPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-      proxyInputPanel.setBounds(10, 200, 320, 150);
-      proxyInputPanel.setLayout(null);
-      proxyArpPanel.add(proxyInputPanel);
-
-      proxyDevice = new JLabel("Device");
-      proxyDevice.setBounds(20, 10, 60, 20);
-      proxyInputPanel.add(proxyDevice);
-
-      proxyIp = new JLabel("IP 주소");
-      proxyIp.setBounds(20, 40, 60, 20);
-      proxyInputPanel.add(proxyIp);
-
-      proxyMac = new JLabel("Mac 주소");
-      proxyMac.setBounds(20, 70, 60, 20);
-      proxyInputPanel.add(proxyMac);
-
-      proxyDeviceWrite = new JTextField();
-      proxyDeviceWrite.setBounds(100, 10, 200, 20);
-      proxyInputPanel.add(proxyDeviceWrite);
-
-      proxyIpWrite = new JTextField();
-      proxyIpWrite.setBounds(100, 40, 200, 20);
-      proxyInputPanel.add(proxyIpWrite);
-
-      proxyMacWrite = new JTextField();
-      proxyMacWrite.setBounds(100, 70, 200, 20);
-      proxyInputPanel.add(proxyMacWrite);
-
-      proxyAddButton = new JButton("Add");
-      proxyAddButton.setBounds(70, 100, 80, 30);
-      proxyDeleteButton = new JButton("Delete");
-      proxyDeleteButton.setBounds(180, 100, 80, 30);
-      proxyInputPanel.add(proxyAddButton);
-      proxyInputPanel.add(proxyDeleteButton);
-      
-      proxyAddButton.addActionListener(new setAddressListener());
-      proxyDeleteButton.addActionListener(new setAddressListener());
-      
+     
       // routing table pannel
       JPanel routePannel = new JPanel();
       routePannel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Static Routing Table",
@@ -429,7 +302,43 @@ public class ARPDlg extends JFrame implements BaseLayer {
 	  
 	  contentPane.add(routerAddPanel);
       setVisible(true);
+      
+      // setting panel
+      JPanel settingPanel = new JPanel();
+      settingPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "setting",
+            TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+      settingPanel.setBounds(380, 5, 350, 370);
+      contentPane.add(settingPanel);
+      settingPanel.setLayout(null);
 
+      JLabel NICLabel = new JLabel("Select NIC");
+      NICLabel.setBounds(80, 20, 170, 20);
+      settingPanel.add(NICLabel);
+      
+      JLabel NICLabel2 = new JLabel("Select NIC2");
+      NICLabel2.setBounds(80, 100, 170, 20);
+      settingPanel.add(NICLabel2);
+      
+      NICComboBox = new JComboBox();
+      NICComboBox.setBounds(80, 49, 170, 20);
+      settingPanel.add(NICComboBox);
+      
+      NICComboBox2 = new JComboBox();
+      NICComboBox2.setBounds(80, 129, 170, 20);
+      settingPanel.add(NICComboBox2);
+      
+      Setting_Button = new JButton("Setting");// setting
+      Setting_Button.setBounds(120, 180, 100, 20);
+      Setting_Button.addActionListener(new setAddressListener());
+      JPanel settingBtnPannel = new JPanel();
+      settingBtnPannel.setBounds(290, 129, 150, 20);
+      settingPanel.add(Setting_Button);// setting
+      contentPane.add(settingBtnPannel);
+      
+      for (int i = 0; ((NILayer) m_LayerMgr.GetLayer("NI")).getAdapterList().size() > i; i++) {
+         NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
+         NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
+      } 
    }
 
    public File getFile() {
