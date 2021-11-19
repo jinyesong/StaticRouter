@@ -1,4 +1,6 @@
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class IPLayer implements BaseLayer {
 	public int nUpperLayerCount = 0;
@@ -106,17 +108,55 @@ public class IPLayer implements BaseLayer {
 	      return network_address;
 	   }
 	
-	public void receive(byte[] input) {
+	public int matchEntry(byte[] dst_ip) {
+		int matchIdx = RT.size()-1;
+		byte[] matchIp = RT.getEntry(RT.size()-1).get(0);
+		for(int i=0; i<RT.size()-1; i++) {
+			ArrayList<byte[]> temp = RT.getEntry(i);
+			// 0:dst 1:netmask 2:gateway 3:flag 4:interface
+			byte[] result_ip = this.subnetting(dst_ip, temp.get(1));
+			if(Arrays.equals(temp.get(0), result_ip)) {
+				if(ByteBuffer.wrap(matchIp).getInt() < ByteBuffer.wrap(result_ip).getInt()) {
+					matchIdx = i;
+					matchIp = result_ip;
+				}
+			}
+		}
+		return matchIdx;
+	}
+	
+	public void receive(byte[] input) { //패킷 수신
 		byte[] dst_ip = new byte[4];
 		System.arraycopy(input, 16, dst_ip, 0, 4);
+		byte[] src_ip = new byte[4];
+		System.arraycopy(input, 12, src_ip, 0, 4);
 		
-		for(int i=0; i < RT.size(); i++) {
-			
+		int idx = this.matchEntry(dst_ip);
+		ArrayList<byte[]> temp = RT.getEntry(idx);
+		// 0:dst 1:netmask 2:gateway 3:flag 4:interface
+		
+		byte[] flag = temp.get(3);
+		if(flag[0] == 1 & flag[1] == 0 & flag[2]==1) { //UH
+			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(dst_ip); // src_ip가 뭐지?
+			if(Arrays.equals(mac, src_ip)) { // ARP로 mac주소 요청받아와야 하는 경우
+				return;
+			}else {
+				this.send();
+			}
+		}
+		else if(flag[0] == 1 & flag[1] == 1 & flag[2]==0) { //UG
+			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(temp.get(2)); // src_ip가 뭐지?
+			if(Arrays.equals(mac, src_ip)) { // ARP로 mac주소 요청받아와야 하는 경우
+				return;
+			}else {
+				this.send();
+			}
 		}
 	}
 	
-	
-	
+	public void send() { //패킷 송신
+		
+	}
 	
 	public void addRoutingTable(byte[] dst, byte[] netmask, byte[] gateway, byte[] flag, byte[] itf) {
 		this.RT.add(dst, netmask, gateway, flag, itf);
