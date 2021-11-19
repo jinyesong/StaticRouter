@@ -91,11 +91,11 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 	
-//	public void ARPSend(byte[] src, byte[] dst) {
-//		this.SetIpSrcAddress(src);
-//		this.SetIpDstAddress(dst);
-//		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
-//	}
+	public void ARPSend(byte[] src, byte[] dst) {
+		this.SetIpSrcAddress(src);
+		this.SetIpDstAddress(dst);
+		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
+	}
 	
 	public byte[] subnetting(byte[] dst_ip, byte[] netmask) {
 	      byte[] network_address = new byte[4];
@@ -135,9 +135,14 @@ public class IPLayer implements BaseLayer {
 		ArrayList<byte[]> temp = RT.getEntry(idx);
 		// 0:dst 1:netmask 2:gateway 3:flag 4:interface
 		
+		_IP_ADDR dst = new _IP_ADDR();
 		byte[] flag = temp.get(3);
 		if(flag[0] == 1 & flag[1] == 0 & flag[2]==1) { //UH
 			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(dst_ip); // src_ip가 뭐지?
+			
+			for(int i=0; i<4; i++) {
+				dst.addr[i] = dst_ip[i]; 
+			}
 			if(Arrays.equals(mac, src_ip)) { // ARP로 mac주소 요청받아와야 하는 경우
 				return;
 			}else {
@@ -146,12 +151,18 @@ public class IPLayer implements BaseLayer {
 		}
 		else if(flag[0] == 1 & flag[1] == 1 & flag[2]==0) { //UG
 			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(temp.get(2)); // src_ip가 뭐지?
+			for(int i=0; i<4; i++) {
+				dst.addr[i] = temp.get(2)[i]; 
+			}
 			if(Arrays.equals(mac, src_ip)) { // ARP로 mac주소 요청받아와야 하는 경우
 				return;
 			}else {
 				this.send();
 			}
 		}
+	}
+	
+	public void settingFrame(byte[] input) {
 	}
 	
 	public void send() { //패킷 송신
