@@ -77,7 +77,11 @@ public class ARPDlg extends JFrame implements BaseLayer {
    JButton proxyAddButton;
    JButton proxyDeleteButton;
    JButton routeAddButton;
-
+   
+   JCheckBox up;
+   JCheckBox gateway;
+   JCheckBox host;
+   
    static JComboBox<String> NICComboBox;
    static JComboBox<String> NICComboBox2;
 
@@ -142,26 +146,62 @@ public class ARPDlg extends JFrame implements BaseLayer {
             }
          }
          
-         //Chatting send 
-         if (e.getSource() == Chat_send_Button) {
-            if (Setting_Button.getText() == "Reset") {
-               for (int i = 0; i < 10; i++) {
-                  String input = ChattingWrite.getText();
-                  routerTableArea.append("[SEND] : " + input + "\n");
-                  byte[] bytes = input.getBytes();
-                  m_LayerMgr.GetLayer("ChatApp").Send(bytes, bytes.length);
-                  if (m_LayerMgr.GetLayer("GUI").Receive()) {
-                     input = Text;
-                     routerTableArea.append("[RECV] : " + input + "\n");
-                     continue;
-                  }
-                  break;
-               }
-            } else {
-               JOptionPane.showMessageDialog(null, "Address Configuration Error");
+        if (e.getSource() == routeAddButton) {
+        	String routeDestination = routeDestinationWrite.getText();
+        	String routeNetmask = routeNetMaskWrite.getText();
+        	String routeGateway = routeGatewayWrite.getText();
+        	String upIsChecked = "0";
+        	String gatewayIsChecked = "0";
+        	String hostIsChecked = "0";
+        	
+        	if (up.isSelected()) {
+        		upIsChecked = "1";
+        	}
+        	if (gateway.isSelected()) {
+        		gatewayIsChecked = "1";
+        	}
+        	if (gateway.isSelected()) {
+        		hostIsChecked = "1";
+        	}
+        	
+        	String port = routeInterfaceWrite.getText();
+        	
+        	byte[] dstIPAddress = new byte[4];
+            String[] byte_dstIP = routeDestination.split("\\.");
+            for (int i = 0; i < 4; i++) {
+               dstIPAddress[i] = (byte) Integer.parseInt(byte_dstIP[i], 10);
             }
-         }
+            byte[] netMaskAddress = new byte[4];
+            String[] byte_mask = routeNetmask.split("\\.");
+            for (int i = 0; i < 4; i++) {
+            	netMaskAddress[i] = (byte) Integer.parseInt(byte_mask[i], 10);
+            }
+            byte[] gatewayAddress = new byte[4];
+            if (routeGateway.equals("*")){
+            	gatewayAddress[0] = (byte) Integer.parseInt("*", 10);
+            }
+            else {
+            	String[] byte_gate = routeNetmask.split("\\.");
+            	 for (int i = 0; i < 4; i++) {
+                 	netMaskAddress[i] = (byte) Integer.parseInt(byte_gate[i], 10);
+                 }
+            }
+            
+            byte[] flagAddress = new byte[3];
+            flagAddress[0] = (byte) Integer.parseInt(upIsChecked,10);
+            flagAddress[1] = (byte) Integer.parseInt(gatewayIsChecked,10);
+            flagAddress[2] = (byte) Integer.parseInt(hostIsChecked,10);
+            
+            byte[] interfaceAddress = new byte[5];
+            interfaceAddress[0] = (byte) Integer.parseInt(port.substring(0,1));
+            interfaceAddress[1] = (byte) Integer.parseInt(port.substring(1,2));
+            interfaceAddress[2] = (byte) Integer.parseInt(port.substring(2,3));
+            interfaceAddress[3] = (byte) Integer.parseInt(port.substring(3,4));
+            interfaceAddress[4] = (byte) Integer.parseInt(port.substring(4,5));
+            
+            ((IPLayer) m_LayerMgr.GetLayer("IP")).addRoutingTable(dstIPAddress, netMaskAddress, gatewayAddress, flagAddress, interfaceAddress);
         
+        }
        
       }
 
@@ -288,11 +328,13 @@ public class ARPDlg extends JFrame implements BaseLayer {
       routeAddButton = new JButton("Add");
       routeAddButton.setBounds(130, 200, 70, 30);
       
-      JCheckBox up = new JCheckBox("up");
+      routeAddButton.addActionListener(new setAddressListener());
+      
+      up = new JCheckBox("up");
       up.setBounds(100, 130, 50, 20);
-	  JCheckBox gateway = new JCheckBox("gateway", true);
+	  gateway = new JCheckBox("gateway", true);
 	  gateway.setBounds(150, 130, 80, 20);
-	  JCheckBox host = new JCheckBox("host");
+	  host = new JCheckBox("host");
 	  host.setBounds(230, 130, 100, 20);
 		
 	  routerAddPanel.add(up);
@@ -333,6 +375,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
       JPanel settingBtnPannel = new JPanel();
       settingBtnPannel.setBounds(290, 129, 150, 20);
       settingPanel.add(Setting_Button);// setting
+      
       contentPane.add(settingBtnPannel);
       
       for (int i = 0; ((NILayer) m_LayerMgr.GetLayer("NI")).getAdapterList().size() > i; i++) {
