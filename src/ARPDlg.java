@@ -178,7 +178,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
             }
             byte[] gatewayAddress = new byte[4];
             if (routeGateway.equals("*")){
-            	gatewayAddress[0] = (byte) Integer.parseInt("*", 10);
+            	gatewayAddress[0] = (byte) Integer.parseInt("-1", 10);
             }
             else {
             	String[] byte_gate = routeNetmask.split("\\.");
@@ -193,12 +193,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
             flagAddress[2] = (byte) Integer.parseInt(hostIsChecked,10);
             
             byte[] interfaceAddress = new byte[5];
-            interfaceAddress[0] = (byte) Integer.parseInt(port.substring(0,1));
-            interfaceAddress[1] = (byte) Integer.parseInt(port.substring(1,2));
-            interfaceAddress[2] = (byte) Integer.parseInt(port.substring(2,3));
-            interfaceAddress[3] = (byte) Integer.parseInt(port.substring(3,4));
-            interfaceAddress[4] = (byte) Integer.parseInt(port.substring(4,5));
-            
+            interfaceAddress = port.getBytes();
             ((IPLayer) m_LayerMgr.GetLayer("IP")).addRoutingTable(dstIPAddress, netMaskAddress, gatewayAddress, flagAddress, interfaceAddress);
         
         }
