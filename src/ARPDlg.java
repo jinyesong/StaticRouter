@@ -36,12 +36,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
 
    public static LayerManager m_LayerMgr = new LayerManager();
 
-   private JTextField ChattingWrite;
-   private JTextField PathWrite;
    private JTextField dstIpWrite;
-   private JTextField proxyDeviceWrite;
-   private JTextField proxyIpWrite;
-   private JTextField proxyMacWrite;
    private JTextField routeDestinationWrite;
    private JTextField routeNetMaskWrite;
    private JTextField routeGatewayWrite;
@@ -96,6 +91,11 @@ public class ARPDlg extends JFrame implements BaseLayer {
    private ArrayList<ArrayList<byte[]>> cacheTable = new ArrayList<ArrayList<byte[]>>();
    public static RoutingTable routingTable = new RoutingTable();
    
+   public String myIp1 = new String();
+   public String myMac1 = new String();
+   public String myIp2 = new String();
+   public String myMac2 = new String();
+   
    public static void main(String[] args) {
 
       ////////////////
@@ -133,10 +133,36 @@ public class ARPDlg extends JFrame implements BaseLayer {
                srcMacAddress.setEnabled(true);
                srcIpAddress.setEnabled(true);
             } else {
-               
+            	
+            	byte[] myIpByte = new byte[4];
+                String[] splitIp = myIp1.split("\\.");
+                for (int i = 0; i < 4; i++) {
+                	myIpByte[i] = (byte) Integer.parseInt(splitIp[i], 10);
+                }
+                byte[] myMacByte = new byte[6];
+                String[] splitMac = myMac1.split("-");
+                for (int i = 0; i < 6; i++) {
+                	myMacByte[i] = (byte) Integer.parseInt(splitMac[i], 16);
+                }
+                
+                byte[] myIpByte2 = new byte[4];
+                String[] splitIp2 = myIp2.split("\\.");
+                for (int i = 0; i < 4; i++) {
+                	myIpByte2[i] = (byte) Integer.parseInt(splitIp2[i], 10);
+                }
+                
+                byte[] myMacByte2 = new byte[6];
+                String[] splitMac2 = myMac2.split("-");
+                for (int i = 0; i < 6; i++) {
+                	myMacByte2[i] = (byte) Integer.parseInt(splitMac2[i], 16);
+                }
+                
+               ((IPLayer) m_LayerMgr.GetLayer("IP")).SetIpSrcAddress(myIpByte);
+               ((IPLayer) m_LayerMgr.GetLayer("IP2")).SetIpSrcAddress(myIpByte2);
+               ((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).SetEnetSrcAddress(myMacByte);
+               ((EthernetLayer) m_LayerMgr.GetLayer("Ethernet2")).SetEnetSrcAddress(myMacByte2);
                ((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(adapterNumber1);
                ((NILayer) m_LayerMgr.GetLayer("NI2")).SetAdapterNumber(adapterNumber2);
-
             }
          }
          // basic ARP 전송
@@ -164,18 +190,28 @@ public class ARPDlg extends JFrame implements BaseLayer {
         	String upIsChecked = "0";
         	String gatewayIsChecked = "0";
         	String hostIsChecked = "0";
+        	String tag="";
         	
         	if (up.isSelected()) {
         		upIsChecked = "1";
+        		tag+="U";
         	}
         	if (gateway.isSelected()) {
         		gatewayIsChecked = "1";
+        		tag+="G";
         	}
         	if (host.isSelected()) {
         		hostIsChecked = "1";
+        		tag+="H";
         	}
         	
         	String port = routeInterfaceWrite.getText();
+        	
+        	routerTableArea.append(routeDestination+"      ");
+        	routerTableArea.append(routeNetmask+"      ");
+        	routerTableArea.append(routeGateway+"      ");
+        	routerTableArea.append(tag+"      ");
+        	routerTableArea.append(port + "\n");
         	
         	byte[] dstIPAddress = new byte[4];
             String[] byte_dstIP = routeDestination.split("\\.");
@@ -360,23 +396,23 @@ public class ARPDlg extends JFrame implements BaseLayer {
       settingPanel.setLayout(null);
 
       JLabel NICLabel = new JLabel("Select NIC");
-      NICLabel.setBounds(80, 20, 300, 20);
+      NICLabel.setBounds(30, 20, 300, 20);
       settingPanel.add(NICLabel);
       
       JLabel NICLabel2 = new JLabel("Select NIC2");
-      NICLabel2.setBounds(80, 100, 300, 20);
+      NICLabel2.setBounds(30, 100, 300, 20);
       settingPanel.add(NICLabel2);
       
       NICComboBox = new JComboBox();
-      NICComboBox.setBounds(80, 49, 300, 20);
+      NICComboBox.setBounds(30, 49, 300, 20);
       settingPanel.add(NICComboBox);
       
       NICComboBox2 = new JComboBox();
-      NICComboBox2.setBounds(80, 129, 300, 20);
+      NICComboBox2.setBounds(30, 129, 300, 20);
       settingPanel.add(NICComboBox2);
       
       Setting_Button = new JButton("Setting");// setting
-      Setting_Button.setBounds(120, 180, 100, 20);
+      Setting_Button.setBounds(80, 180, 200, 40);
       Setting_Button.addActionListener(new setAddressListener());
       JPanel settingBtnPannel = new JPanel();
       settingBtnPannel.setBounds(290, 129, 150, 20);
@@ -386,15 +422,9 @@ public class ARPDlg extends JFrame implements BaseLayer {
       
       for (int i = 0; ((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.size() > i; i++) {
          NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.get(i).getDescription());
-         //NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI2")).m_pAdapterList.get(i).getDescription());
-        //NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
-        //NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI2")).GetAdapterObject(i).getDescription());
       }
       for (int i = 0; ((NILayer) m_LayerMgr.GetLayer("NI2")).m_pAdapterList.size() > i; i++) {
-          //NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.get(i).getDescription());
           NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI2")).m_pAdapterList.get(i).getDescription());
-         //NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
-         //NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI2")).GetAdapterObject(i).getDescription());
        }
       
       NICComboBox.addActionListener(new ActionListener() { // Event Listener
@@ -406,9 +436,8 @@ public class ARPDlg extends JFrame implements BaseLayer {
              adapterNumber1 = NICComboBox.getSelectedIndex();
              System.out.println("Index: " + adapterNumber1);
              try {
-            	 //System.out.println(get_MacAddress(((NILayer) m_LayerMgr.GetLayer("NI"))
-                 //        .GetAdapterObject(adapterNumber).getHardwareAddress()));
-            	 System.out.println(get_MacAddress(((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.get(0).getHardwareAddress()));
+            	 myMac1 = get_MacAddress(((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.get(0).getHardwareAddress());
+            	 System.out.println(myMac1);
                  byte[] ipSrcAddress1 = ((((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.get(0)
               		   .getAddresses()).get(0)).getAddr().getData();
                  final StringBuilder IPAddrbuf0 = new StringBuilder();
@@ -417,8 +446,8 @@ public class ARPDlg extends JFrame implements BaseLayer {
               		   IPAddrbuf0.append(".");
               	   IPAddrbuf0.append(b & 0xff);
                  }
-                 System.out.println(IPAddrbuf0.toString());
-
+                 myIp1 = IPAddrbuf0.toString();
+                 System.out.println(myIp1);
              } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
@@ -434,10 +463,8 @@ public class ARPDlg extends JFrame implements BaseLayer {
              adapterNumber2 = NICComboBox2.getSelectedIndex();
              System.out.println("Index: " + adapterNumber2);
              try {
-            	
-//               System.out.println(get_MacAddress(((NILayer) m_LayerMgr.GetLayer("NI2"))
-//                       .GetAdapterObject(adapterNumber).getHardwareAddress()));
-            	 System.out.println(get_MacAddress(((NILayer) m_LayerMgr.GetLayer("NI2")).m_pAdapterList.get(1).getHardwareAddress()));
+               myMac2= get_MacAddress(((NILayer) m_LayerMgr.GetLayer("NI2")).m_pAdapterList.get(1).getHardwareAddress());
+               System.out.println(myMac2);
                byte[] ipSrcAddress2 = ((((NILayer) m_LayerMgr.GetLayer("NI2")).m_pAdapterList.get(1)
               		   .getAddresses()).get(0)).getAddr().getData();
                  final StringBuilder IPAddrbuf1 = new StringBuilder();
@@ -445,8 +472,9 @@ public class ARPDlg extends JFrame implements BaseLayer {
               	   if (IPAddrbuf1.length()!=0)
               		 IPAddrbuf1.append(".");
               	 IPAddrbuf1.append(b & 0xff);
-                 }
-                 System.out.println(IPAddrbuf1.toString());
+               }
+               myIp2 = IPAddrbuf1.toString();
+               System.out.println(myIp2);
              } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
