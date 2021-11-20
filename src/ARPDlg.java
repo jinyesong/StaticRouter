@@ -94,6 +94,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
    File file;
    
    private ArrayList<ArrayList<byte[]>> cacheTable = new ArrayList<ArrayList<byte[]>>();
+   public static RoutingTable routingTable = new RoutingTable();
    
    public static void main(String[] args) {
 
@@ -110,6 +111,11 @@ public class ARPDlg extends JFrame implements BaseLayer {
       m_LayerMgr.AddLayer(new ARPDlg("GUI"));
       
       m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *GUI ) ) +IP ( *GUI ) ) )  ^NI2 ( *Ethernet2 ( *ARP2 ( *IP2 ( *GUI ) ) +IP2 ( *GUI ) ) )");
+      
+      ((IPLayer) m_LayerMgr.GetLayer("IP")).secondIPLayerSet(((IPLayer) m_LayerMgr.GetLayer("IP2")));
+      ((IPLayer) m_LayerMgr.GetLayer("IP2")).secondIPLayerSet(((IPLayer) m_LayerMgr.GetLayer("IP")));
+      ((IPLayer) m_LayerMgr.GetLayer("IP")).setRouter(routingTable);
+      ((IPLayer) m_LayerMgr.GetLayer("IP2")).setRouter(routingTable);
       
       ///////////////////
    }
