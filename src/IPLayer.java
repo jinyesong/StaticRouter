@@ -97,41 +97,13 @@ public class IPLayer implements BaseLayer {
 		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
 	}
 	
-	public byte[] subnetting(byte[] dst_ip, byte[] netmask) {
-	      byte[] network_address = new byte[4];
-	      for(int i = 0; i < 4; i++) {
-	         network_address[i] = (byte) (dst_ip[i] & netmask[i]);
-	      }
-	      //System.out.println(Byte.toUnsignedInt(dst_ip[0]) + "." + Byte.toUnsignedInt(dst_ip[1]) + "." + Byte.toUnsignedInt(dst_ip[2])  + "." + Byte.toUnsignedInt(dst_ip[3]));
-	      //System.out.println(Byte.toUnsignedInt(netmask[0]) + "." + Byte.toUnsignedInt(netmask[1]) + "." + Byte.toUnsignedInt(netmask[2])  + "." + Byte.toUnsignedInt(netmask[3]));
-	      //System.out.println(Byte.toUnsignedInt(network_address[0]) + "." + Byte.toUnsignedInt(network_address[1]) + "." + Byte.toUnsignedInt(network_address[2])  + "." + Byte.toUnsignedInt(network_address[3]));
-	      return network_address;
-	   }
-	
-	public int matchEntry(byte[] dst_ip) {
-		int matchIdx = RT.size()-1;
-		byte[] matchIp = RT.getEntry(RT.size()-1).get(0);
-		for(int i=0; i<RT.size()-1; i++) {
-			ArrayList<byte[]> temp = RT.getEntry(i);
-			// 0:dst 1:netmask 2:gateway 3:flag 4:interface
-			byte[] result_ip = this.subnetting(dst_ip, temp.get(1));
-			if(Arrays.equals(temp.get(0), result_ip)) {
-				if(ByteBuffer.wrap(matchIp).getInt() < ByteBuffer.wrap(result_ip).getInt()) {
-					matchIdx = i;
-					matchIp = result_ip;
-				}
-			}
-		}
-		return matchIdx;
-	}
-	
 	public void receive(byte[] input) { //패킷 수신
 		byte[] dst_ip = new byte[4];
 		System.arraycopy(input, 16, dst_ip, 0, 4);
 		byte[] src_ip = new byte[4];
 		System.arraycopy(input, 12, src_ip, 0, 4);
 		
-		int idx = this.matchEntry(dst_ip);
+		int idx = this.RT.matchEntry(dst_ip);
 		ArrayList<byte[]> temp = RT.getEntry(idx);
 		// 0:dst 1:netmask 2:gateway 3:flag 4:interface
 		
@@ -170,8 +142,7 @@ public class IPLayer implements BaseLayer {
 	}
 
 	public void addRoutingTable(byte[] dst, byte[] netmask, byte[] gateway, byte[] flag, byte[] itf) {
-		//this.RT.add(dst, netmask, gateway, flag, itf);
-		subnetting(dst, netmask);
+		this.RT.add(dst, netmask, gateway, flag, itf);
 	}
 	
 	public void removeRoutingTable() {
