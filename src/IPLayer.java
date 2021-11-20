@@ -7,8 +7,8 @@ public class IPLayer implements BaseLayer {
 	public String pLayerName = null;
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
-	public RoutingTable RT = new RoutingTable();
-	
+	public IPLayer secondeIPLayer;
+	public RoutingTable RT;
 	private class _IP_ADDR {
 		private byte[] addr = new byte[4];
 
@@ -170,13 +170,20 @@ public class IPLayer implements BaseLayer {
 	}
 
 	public void addRoutingTable(byte[] dst, byte[] netmask, byte[] gateway, byte[] flag, byte[] itf) {
-		this.RT.add(dst, netmask, gateway, flag, itf);
+		//this.RT.add(dst, netmask, gateway, flag, itf);
 		subnetting(dst, netmask);
 	}
 	
 	public void removeRoutingTable() {
 		
 	}
+	public void setRouter(RoutingTable routingtable) {
+		this.RT = routingtable;
+	}
+	public void secondIPLayerSet(IPLayer ip_layer) {
+		this.secondeIPLayer = ip_layer;
+	}
+	
 //	public byte[] ObjToByte(_IP_HEADER Header, byte[] input, int length) {//data
 //		byte[] buf = new byte[length + 14];
 //		for(int i = 0; i < 4; i++) {
@@ -197,13 +204,6 @@ public class IPLayer implements BaseLayer {
 //		byte[] bytes = ObjToByte(m_sHeader, input, length);
 //		this.GetUnderLayer().Send(bytes, length + 14);
 //
-//		return true;
-//	}
-//	
-//	public boolean fileSend(byte[] input, int length) {
-//		m_sHeader.enet_type = intToByte2(0x2090);
-//		byte[] bytes = ObjToByte(m_sHeader, input, length);
-//		this.GetUnderLayer().Send(bytes, length + 14);
 //		return true;
 //	}
 	
