@@ -100,8 +100,8 @@ public class IPLayer implements BaseLayer {
 	public void receive(byte[] input) { //패킷 수신
 		byte[] dst_ip = new byte[4];
 		System.arraycopy(input, 16, dst_ip, 0, 4);
-		byte[] src_ip = new byte[4];
-		System.arraycopy(input, 12, src_ip, 0, 4);
+		byte[] src_ip = m_sHeader.ip_src.addr;
+		
 		
 		int idx = this.RT.matchEntry(dst_ip);
 		ArrayList<byte[]> temp = RT.getEntry(idx);
