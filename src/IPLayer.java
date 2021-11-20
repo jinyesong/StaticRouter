@@ -110,7 +110,7 @@ public class IPLayer implements BaseLayer {
 		_IP_ADDR dst = new _IP_ADDR();
 		byte[] flag = temp.get(3);
 		if(flag[0] == 1 & flag[1] == 0 & flag[2]==1) { //UH
-			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(dst_ip); // src_ip가 뭐지?
+			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(src_ip, dst_ip); // src_ip가 뭐지?
 			
 			for(int i=0; i<4; i++) {
 				dst.addr[i] = dst_ip[i]; 
@@ -122,7 +122,7 @@ public class IPLayer implements BaseLayer {
 			}
 		}
 		else if(flag[0] == 1 & flag[1] == 1 & flag[2]==0) { //UG
-			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(temp.get(2)); // src_ip가 뭐지?
+			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(src_ip, temp.get(2)); // src_ip가 뭐지?
 			for(int i=0; i<4; i++) {
 				dst.addr[i] = temp.get(2)[i]; 
 			}

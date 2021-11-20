@@ -17,13 +17,13 @@ public class RoutingTable {
 	public void remove() { // rounting table 삭제
 		this.routingTable.remove(this.routingTable.size()-1);
 	}
-//	public ArrayList<byte[]> getEntry(int idx) { // 일치하는 gateway 반환
-//		return this.routingTable.get(idx);
-//	}
-//	
-//	public int size() {
-//		return this.routingTable.size();
-//	}
+	public ArrayList<byte[]> getEntry(int idx) { // 일치하는 gateway 반환
+		return this.routingTable.get(idx);
+	}
+	
+	public int size() {
+		return this.routingTable.size();
+	}
 	
 	public byte[] subnetting(byte[] dst_ip, byte[] netmask) {
 	      byte[] network_address = new byte[4];

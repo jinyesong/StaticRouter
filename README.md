@@ -55,12 +55,12 @@
 1. 패킷으로부터 목적지 ip 주소 추출
 2. destination Ip 주소 & subnet mask 해서 network address 구한다. (Routing Table을 통해서)
 3. 구한 네트워크 주소와 table의 destination address를 비교한다. 구한 네트워크 주소로 보내기 위한 interface를 선택한다.(매칭안되면 default로)
-4. 선택된 entry의 flag가 ug면 해당 route entry의 Gateway로 패킷을 전송한다.
+4. 선택된 entry의 flag가 UG면 해당 route entry의 Gateway로 패킷을 전송한다.
    - Gateway의 ip 주소는 Routing table에서 확인
    - 패킷을 Gateway에게 전달하려면 Gateway의 MAC 주소를 알아야한다.  
      -Gateway의 MAC 주소는 ARP cache table에서 찾고 없으면 ARP 메시지로 Gateway의 Mac 주소를 알아온다. 그 후 route entry의 interface를 통해서 패킷을 전달한다.  
      이때 ARP request의 target ip = gateway ip 주소
-5. 선택된 entry의 flag가 u면 destination IP(host2)로 패킷을 전송한다.(우리는 이 경우밖에 없음)
+5. 선택된 entry의 flag가 UH면 destination IP(host2)로 패킷을 전송한다.(우리는 이 경우밖에 없음)
    - destination IP는 ARP cache table에서 찾고 없으면 ARP 메시지로 Gateway의 Mac 주소를 알아온다. 그 후 패킷을 전달한다.  
      이때 ARP request의 target ip = destination ip 주소(host2 ip)
 6. 두 주소가 일치하는 entry가 여러 개일 경우, 긴 match 주소로.

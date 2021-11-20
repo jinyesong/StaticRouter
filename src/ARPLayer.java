@@ -136,17 +136,15 @@ public class ARPLayer implements BaseLayer {
 		return false;
 	}
 
-	public byte[] checkCacheTable(byte[] input) { //목적지의 ip주소와 맞는 mac주소 존재하는지 확인 -> 있으면 mac주소 return
+	public byte[] checkCacheTable(byte[] src_ip, byte[] dst_ip) { //목적지의 ip주소와 맞는 mac주소 존재하는지 확인 -> 있으면 mac주소 return
 		//input: 전송 IPpacket의 ARP packet부분에서 목적지 mac주소만 빠진 것
-		byte[] ip_buf = new byte[4]; //목적지 ip주소
-		byte[] ip_src_buf = new byte[4];
+		// dst_ip :목적지 ip주소
+		// src_ip : sender ip 주소
 		byte[] mac_buf = new byte[6];
-	    for(int i=0; i<4; i++) {   
-	       ip_buf[i] = input[24+i]; //input의 ip주소 buffer 임시저장
-	    }
+	    
 	    boolean hasIP = false;
 	    for(int i=0; i<cacheTable.size(); i++) {
-	    	if(java.util.Arrays.equals(ip_buf, cacheTable.get(i).get(0))) { //cacheTable에 ip주소가 존재
+	    	if(java.util.Arrays.equals(dst_ip, cacheTable.get(i).get(0))) { //cacheTable에 ip주소가 존재
 	        hasIP = true;
 	        mac_buf = cacheTable.get(i).get(1);
 	      }
@@ -155,11 +153,8 @@ public class ARPLayer implements BaseLayer {
 	    	return mac_buf;
 	    }
 	    else {
-	    	for(int i=0; i<4; i++) {
-	    		ip_src_buf[i] = input[14+i];
-	    	}
-	    	ARPSend(ip_src_buf, ip_buf); //ARP request
-	    	return ip_buf;
+	    	ARPSend(src_ip, dst_ip); //ARP request
+	    	return dst_ip;
 	    }
 	}
 	
