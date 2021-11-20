@@ -99,14 +99,17 @@ public class ARPDlg extends JFrame implements BaseLayer {
       ////////////////
 
       m_LayerMgr.AddLayer(new NILayer("NI"));
+      m_LayerMgr.AddLayer(new NILayer("NI2"));
       m_LayerMgr.AddLayer(new EthernetLayer("Ethernet"));
+      m_LayerMgr.AddLayer(new EthernetLayer("Ethernet2"));
       m_LayerMgr.AddLayer(new ARPLayer("ARP"));
+      m_LayerMgr.AddLayer(new ARPLayer("ARP2"));
       m_LayerMgr.AddLayer(new IPLayer("IP"));
-      m_LayerMgr.AddLayer(new TCPLayer("TCP"));
-      // m_LayerMgr.AddLayer(new ChatAppLayer("ChatApp"));
-      // m_LayerMgr.AddLayer(new FileAppLayer("FileApp"));
+      m_LayerMgr.AddLayer(new IPLayer("IP2"));
       m_LayerMgr.AddLayer(new ARPDlg("GUI"));
-      m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *GUI ) ) ) ) )");
+      
+      m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *GUI ) ) +IP ( *GUI ) ) )  ^NI2 ( *Ethernet ( *ARP2 ( *IP2 ( *GUI ) ) +IP2 ( *GUI ) ) )");
+      
       ///////////////////
    }
 
@@ -141,7 +144,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
                   dstIPAddress[i] = (byte) Integer.parseInt(byte_dstIP[i], 10);
                }
                dstIPNumber = dstIPAddress;
-               ((TCPLayer) m_LayerMgr.GetLayer("TCP")).ARPSend(srcIPNumber, dstIPNumber);
+              // ((TCPLayer) m_LayerMgr.GetLayer("TCP")).ARPSend(srcIPNumber, dstIPNumber);
                
             }
          }
@@ -374,8 +377,10 @@ public class ARPDlg extends JFrame implements BaseLayer {
       contentPane.add(settingBtnPannel);
       
       for (int i = 0; ((NILayer) m_LayerMgr.GetLayer("NI")).getAdapterList().size() > i; i++) {
-         NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
-         NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
+         //NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.get(i).getDescription());
+        // NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI2")).m_pAdapterList.get(i).getDescription());
+        NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
+        NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
       }
       
       NICComboBox.addActionListener(new ActionListener() { // Event Listener
