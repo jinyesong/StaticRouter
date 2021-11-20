@@ -376,7 +376,63 @@ public class ARPDlg extends JFrame implements BaseLayer {
       for (int i = 0; ((NILayer) m_LayerMgr.GetLayer("NI")).getAdapterList().size() > i; i++) {
          NICComboBox.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
          NICComboBox2.addItem(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(i).getDescription());
-      } 
+      }
+      
+      NICComboBox.addActionListener(new ActionListener() { // Event Listener
+
+          @Override
+          public void actionPerformed(ActionEvent e) {
+             // TODO Auto-generated method stub
+
+             adapterNumber = NICComboBox.getSelectedIndex();
+             System.out.println("Index: " + adapterNumber);
+             try {
+            	 System.out.println(get_MacAddress(((NILayer) m_LayerMgr.GetLayer("NI"))
+                         .GetAdapterObject(adapterNumber).getHardwareAddress()));
+            	 byte[] ipSrcAddress1 = ((((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.get(0)
+              		   .getAddresses()).get(0)).getAddr().getData();
+                 final StringBuilder IPAddrbuf0 = new StringBuilder();
+                 for (byte b: ipSrcAddress1) {
+              	   if (IPAddrbuf0.length()!=0)
+              		   IPAddrbuf0.append(".");
+              	   IPAddrbuf0.append(b & 0xff);
+                 }
+                 System.out.println(IPAddrbuf0.toString());
+
+             } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+             }
+          }
+       });
+      
+      NICComboBox2.addActionListener(new ActionListener() { // Event Listener
+
+          @Override
+          public void actionPerformed(ActionEvent e) {
+             // TODO Auto-generated method stub
+
+             System.out.println("Index: " + adapterNumber);
+             try {
+            	
+               System.out.println(get_MacAddress(((NILayer) m_LayerMgr.GetLayer("NI"))
+                       .GetAdapterObject(adapterNumber).getHardwareAddress()));
+               byte[] ipSrcAddress2 = ((((NILayer) m_LayerMgr.GetLayer("NI")).m_pAdapterList.get(1)
+              		   .getAddresses()).get(1)).getAddr().getData();
+                 final StringBuilder IPAddrbuf1 = new StringBuilder();
+                 for (byte b: ipSrcAddress2) {
+              	   if (IPAddrbuf1.length()!=0)
+              		 IPAddrbuf1.append(".");
+              	 IPAddrbuf1.append(b & 0xff);
+                 }
+                 System.out.println(IPAddrbuf1.toString());
+             } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+             }
+          }
+       });
+      
    }
 
    public File getFile() {
