@@ -135,29 +135,43 @@ public class ARPLayer implements BaseLayer {
 		((EthernetLayer) this.GetUnderLayer()).ARPSend(bytes, 28);
 		return false;
 	}
-
-	public byte[] checkCacheTable(byte[] src_ip, byte[] dst_ip) { //목적지의 ip주소와 맞는 mac주소 존재하는지 확인 -> 있으면 mac주소 return
-		//input: 전송 IPpacket의 ARP packet부분에서 목적지 mac주소만 빠진 것
-		// dst_ip :목적지 ip주소
-		// src_ip : sender ip 주소
-		byte[] mac_buf = new byte[6];
-	    
-	    boolean hasIP = false;
+	
+	public int hasIpInCacheTable(byte[] src_ip, byte[] dst_ip) {
+		// -1: ip없음  else 해당 index반환
+		int idx = -1;
 	    for(int i=0; i<cacheTable.size(); i++) {
 	    	if(java.util.Arrays.equals(dst_ip, cacheTable.get(i).get(0))) { //cacheTable에 ip주소가 존재
-	        hasIP = true;
-	        mac_buf = cacheTable.get(i).get(1);
-	      }
+	    		idx = i;
+	        }
 	    }
-	    if(hasIP) {
-	    	return mac_buf;
-	    }
-	    else {
-	    	ARPSend(src_ip, dst_ip); //ARP request
-	    	return dst_ip;
-	    }
+	    return idx;
+	}
+	public byte[] getMacInCacheTable(int idx) {
+		return this.cacheTable.get(idx).get(1);
 	}
 	
+//	public byte[] checkCacheTable(byte[] src_ip, byte[] dst_ip) { //목적지의 ip주소와 맞는 mac주소 존재하는지 확인 -> 있으면 mac주소 return
+//		//input: 전송 IPpacket의 ARP packet부분에서 목적지 mac주소만 빠진 것
+//		// dst_ip :목적지 ip주소
+//		// src_ip : sender ip 주소
+//		byte[] mac_buf = new byte[6];
+//	    
+//	    boolean hasIP = false;
+//	    for(int i=0; i<cacheTable.size(); i++) {
+//	    	if(java.util.Arrays.equals(dst_ip, cacheTable.get(i).get(0))) { //cacheTable에 ip주소가 존재
+//	        hasIP = true;
+//	        mac_buf = cacheTable.get(i).get(1);
+//	      }
+//	    }
+//	    if(hasIP) {
+//	    	return mac_buf;
+//	    }
+//	    else {
+//	    	ARPSend(src_ip, dst_ip); //ARP request
+//	    	return dst_ip;
+//	    }
+//	}
+//	
 	public boolean addCacheTable(byte[] input){//cache table setting
 	      ArrayList<byte[]> cache = new ArrayList<byte[]>();
 	      //proxycacheTable dlg에서 proxy가져오기 

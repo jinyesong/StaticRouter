@@ -100,37 +100,38 @@ public class IPLayer implements BaseLayer {
 	public void receive(byte[] input) { //패킷 수신
 		byte[] dst_ip = new byte[4];
 		System.arraycopy(input, 16, dst_ip, 0, 4);
-		byte[] src_ip = m_sHeader.ip_src.addr;
-		
+		byte[] src_ip = this.m_sHeader.ip_src.addr;
 		
 		int idx = this.RT.matchEntry(dst_ip);
 		ArrayList<byte[]> temp = RT.getEntry(idx);
 		// 0:dst 1:netmask 2:gateway 3:flag 4:interface
 		
-		_IP_ADDR dst = new _IP_ADDR();
 		byte[] flag = temp.get(3);
 		if(flag[0] == 1 & flag[1] == 0 & flag[2]==1) { //UH
-			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(src_ip, dst_ip); // src_ip가 뭐지?
-			
-			for(int i=0; i<4; i++) {
-				dst.addr[i] = dst_ip[i]; 
+			this.m_sHeader.ip_dst.addr = dst_ip; 
+			int hasIp = ((ARPLayer)this.GetUnderLayer()).hasIpInCacheTable(src_ip, dst_ip);			
+			if(hasIp == -1) {
+				((ARPLayer)this.GetUnderLayer()).ARPSend(src_ip, dst_ip);
 			}
-			if(Arrays.equals(mac, src_ip)) { // ARP로 mac주소 요청받아와야 하는 경우
-				return;
-			}else {
+			else {
+				byte[] mac = ((ARPLayer) this.GetUnderLayer()).getMacInCacheTable(hasIp);
+				((EthernetLayer)this.GetUnderLayer()).SetEnetDstAddress(mac);
 				this.send();
 			}
+			
 		}
 		else if(flag[0] == 1 & flag[1] == 1 & flag[2]==0) { //UG
-			byte[] mac = ((ARPLayer) this.GetUnderLayer()).checkCacheTable(src_ip, temp.get(2)); // src_ip가 뭐지?
-			for(int i=0; i<4; i++) {
-				dst.addr[i] = temp.get(2)[i]; 
+			this.m_sHeader.ip_dst.addr = temp.get(2); 
+			
+			int hasIp = ((ARPLayer)this.GetUnderLayer()).hasIpInCacheTable(src_ip, temp.get(2));			
+			if(hasIp == -1) {
+				((ARPLayer)this.GetUnderLayer()).ARPSend(src_ip, dst_ip);				
 			}
-			if(Arrays.equals(mac, src_ip)) { // ARP로 mac주소 요청받아와야 하는 경우
-				return;
-			}else {
+			else {
+				byte[] mac = ((ARPLayer) this.GetUnderLayer()).getMacInCacheTable(hasIp);
+				((EthernetLayer)this.GetUnderLayer()).SetEnetDstAddress(mac);
 				this.send();
-			}
+			}			
 		}
 	}
 	
