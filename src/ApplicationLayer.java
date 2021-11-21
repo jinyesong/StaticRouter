@@ -82,6 +82,7 @@ public class ApplicationLayer extends JFrame implements BaseLayer {
 
    int adapterNumber1 = 0;
    int adapterNumber2 = 0;
+   String port;
    byte[] srcIPNumber, dstIPNumber, srcMacNumber;
    String Text;
    JProgressBar progressBar;
@@ -159,6 +160,8 @@ public class ApplicationLayer extends JFrame implements BaseLayer {
                 
                ((IPLayer) m_LayerMgr.GetLayer("IP")).SetIpSrcAddress(myIpByte);
                ((IPLayer) m_LayerMgr.GetLayer("IP2")).SetIpSrcAddress(myIpByte2);
+               ((IPLayer) m_LayerMgr.GetLayer("IP")).setPort(1);
+               ((IPLayer) m_LayerMgr.GetLayer("IP2")).setPort(2);
                ((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).SetEnetSrcAddress(myMacByte);
                ((EthernetLayer) m_LayerMgr.GetLayer("Ethernet2")).SetEnetSrcAddress(myMacByte2);
                ((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(adapterNumber1);
@@ -205,7 +208,7 @@ public class ApplicationLayer extends JFrame implements BaseLayer {
         		tag+="H";
         	}
         	
-        	String port = routeInterfaceWrite.getText();
+        	port = routeInterfaceWrite.getText();
         	
         	routerTableArea.append(routeDestination+"      ");
         	routerTableArea.append(routeNetmask+"      ");
@@ -239,8 +242,8 @@ public class ApplicationLayer extends JFrame implements BaseLayer {
             flagAddress[1] = (byte) Integer.parseInt(gatewayIsChecked,10);
             flagAddress[2] = (byte) Integer.parseInt(hostIsChecked,10);
             
-            byte[] interfaceAddress = new byte[5];
-            interfaceAddress = port.getBytes();
+            byte[] interfaceAddress = new byte[1];
+            interfaceAddress[0] =  (byte) Integer.parseInt(port,10);
             ((IPLayer) m_LayerMgr.GetLayer("IP")).addRoutingTable(dstIPAddress, netMaskAddress, gatewayAddress, flagAddress, interfaceAddress);
         
         }
