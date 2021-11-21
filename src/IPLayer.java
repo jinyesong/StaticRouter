@@ -119,7 +119,7 @@ public class IPLayer implements BaseLayer {
 				byte[] mac = ((ARPLayer) this.GetUnderLayer())
 						.getMacInCacheTable(hasIp);
 				((EthernetLayer) this.GetUnderLayer()).SetEnetDstAddress(mac);
-				this.send();
+				this.secondeIPLayer.Send();
 			}
 
 		} else if (flag[0] == 1 & flag[1] == 1 & flag[2] == 0) { // UG
@@ -133,7 +133,7 @@ public class IPLayer implements BaseLayer {
 				byte[] mac = ((ARPLayer) this.GetUnderLayer())
 						.getMacInCacheTable(hasIp);
 				((EthernetLayer) this.GetUnderLayer()).SetEnetDstAddress(mac);
-				this.send();
+				this.secondeIPLayer.Send();
 			}
 		}
 	}
@@ -160,7 +160,7 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 
-	public boolean Send(byte[] input) { // 패킷송신
+	public boolean Send() { // 패킷송신
 		byte[] bytes = ObjToByte(m_sHeader);
 		int length = byte2ToInt(m_sHeader.ip_len[0], m_sHeader.ip_len[1]); // 전체 ip 길이
 		this.GetUnderLayer().Send(bytes, length);
