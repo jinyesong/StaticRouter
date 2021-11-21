@@ -9,6 +9,7 @@ public class IPLayer implements BaseLayer {
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	public IPLayer secondeIPLayer;
 	public RoutingTable RT;
+	public int port;
 	private class _IP_ADDR {
 		private byte[] addr = new byte[4];
 
@@ -154,6 +155,10 @@ public class IPLayer implements BaseLayer {
 	}
 	public void secondIPLayerSet(IPLayer ip_layer) {
 		this.secondeIPLayer = ip_layer;
+	}
+	
+	public void setPort(int portNum) {
+		this.port = portNum;
 	}
 	
 //	public byte[] ObjToByte(_IP_HEADER Header, byte[] input, int length) {//data
