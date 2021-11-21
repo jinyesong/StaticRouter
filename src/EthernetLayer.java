@@ -106,7 +106,7 @@ public class EthernetLayer implements BaseLayer {
     }
     
 	public boolean Send(byte[] input, int length) {
-		m_sHeader.enet_type = intToByte2(0x2080);
+		m_sHeader.enet_type = intToByte2(0x0800);
 		m_sHeader.enet_data = input;
 		byte[] bytes = ObjToByte(m_sHeader, input, length);
 		this.GetUnderLayer().Send(bytes, length + 14);
@@ -172,28 +172,8 @@ public class EthernetLayer implements BaseLayer {
 
 	public boolean Receive(byte[] input) {
 		byte[] data;
-		/**System.out.println("ethernet receive");
-		int temp_type = byte2ToInt(input[12], input[13]);
-		System.out.println(temp_type);
-		if(temp_type == Integer.decode("0x2080")) { //data
-			System.out.println("2080");
-			if(chkAddr(input) || (IsItBroadcast(input)) || !IsItMyPacket(input)) {
-				data = RemoveEtherHeader(input, input.length);
-				this.GetUpperLayer(0).Receive(data);
-				return true;
-			}
-		}
-		else if(temp_type == Integer.decode("0x2090")) { //file
-			System.out.println("2090");
-			if(chkAddr(input) || (IsItBroadcast(input)) || !IsItMyPacket(input)) {
-				data = RemoveEtherHeader(input, input.length);
-				this.GetUpperLayer(1).Receive(data);
-				return true;
-			}
-		}else if(temp_type == Integer.decode("0x0806")) {
-			System.out.println("0806");
-			this.ARPReceive(input);
-		}*/
+		
+		//System.out.println("이더넷 input !!!"+input.length);
 		int temp_type = byte2ToInt(input[12], input[13]);
 		if(temp_type == Integer.decode("0x0806")) { //ARP packet
 			if(chkAddr(input) || !IsItMyPacket(input) || (IsItBroadcast(input))) {
@@ -205,28 +185,12 @@ public class EthernetLayer implements BaseLayer {
 		else if(temp_type == Integer.decode("0x0800")) { //IPv4 packet -> ping
 			if(chkAddr(input) || !IsItMyPacket(input) || (IsItBroadcast(input))) {
 				data = RemoveEtherHeader(input, input.length);
-				((IPLayer) this.GetUpperLayer(0)).Receive(data);
+				((IPLayer) this.GetUpperLayer(1)).Receive(data);
 				return true;
 			}
 		}
 		return false; 
 	}
-	
-	/**public boolean ARPReceive(byte[] input) {
-		byte[] data;
-		// type�� 0x0806�대㈃ ARP
-		System.out.println("ethernet arp receive");
-		int temp_type = byte2ToInt(input[12], input[13]);
-		if(temp_type == Integer.decode("0x0806")) {
-			
-			if(chkAddr(input) || !IsItMyPacket(input) || (IsItBroadcast(input))) {	// 
-				data = RemoveEtherHeader(input, input.length);
-				((ARPLayer) this.GetUpperLayer(0)).ARPReceive(data);
-				return true;
-			}
-		}
-		return false;
-	}*/
 	
 	// 紐⑹��吏�媛� ���몄�(ethernet header�� dst二쇱��媛� ���몄� ����) 
 	private boolean chkAddr(byte[] input) {

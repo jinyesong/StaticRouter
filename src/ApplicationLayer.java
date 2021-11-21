@@ -158,6 +158,16 @@ public class ApplicationLayer extends JFrame implements BaseLayer {
                 	myMacByte2[i] = (byte) Integer.parseInt(splitMac2[i], 16);
                 }
                 
+                System.out.println("!!!!myip1:"+myIp1);
+                System.out.println("!!!!myip2:"+myIp2);
+                System.out.println("!!!!myMac1:"+myMac1);
+                System.out.println("!!!!myMac2:"+myMac2);
+                
+               ((ARPLayer) m_LayerMgr.GetLayer("ARP")).SetIpSrcAddress(myIpByte);
+               ((ARPLayer) m_LayerMgr.GetLayer("ARP2")).SetIpSrcAddress(myIpByte2);
+               ((ARPLayer) m_LayerMgr.GetLayer("ARP")).SetArpSrcAddress(myMacByte);
+               ((ARPLayer) m_LayerMgr.GetLayer("ARP2")).SetArpSrcAddress(myMacByte2);
+               
                ((IPLayer) m_LayerMgr.GetLayer("IP")).SetIpSrcAddress(myIpByte);
                ((IPLayer) m_LayerMgr.GetLayer("IP2")).SetIpSrcAddress(myIpByte2);
                ((IPLayer) m_LayerMgr.GetLayer("IP")).setPort(1);

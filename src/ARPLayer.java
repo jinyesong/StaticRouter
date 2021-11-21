@@ -297,22 +297,22 @@ public class ARPLayer implements BaseLayer {
 				
 			}else { // 내가 목적지가 아닌 경우
 				// proxy ARP
-				System.out.println("proxy ip buf는?");
+				System.out.println("proxy야!!!!");
 				// 자신의 proxy table 확인
-				boolean check = ProxyCheck(ip_buf);
-				
-				// 만약 proxy table에 target's mac 주소 있으면 target's mac 주소 채움
-				// proxy table에 있으면 Dlg로 table 보내주기.
-				// sender's와 target's 위치 swap.
-				// opcode 2로 변경
-				if(check==true) {
-					frame.opcode = intToByte2(2);
-			
-					ARPSend(send_ip_b, target_ip_b);
-					frame.opcode = intToByte2(1);
-					
-					((ApplicationLayer) ApplicationLayer.m_LayerMgr.GetLayer("GUI")).setArpCache(cacheTable);
-					}
+//				boolean check = ProxyCheck(ip_buf);
+//				
+//				// 만약 proxy table에 target's mac 주소 있으면 target's mac 주소 채움
+//				// proxy table에 있으면 Dlg로 table 보내주기.
+//				// sender's와 target's 위치 swap.
+//				// opcode 2로 변경
+//				if(check==true) {
+//					frame.opcode = intToByte2(2);
+//			
+//					ARPSend(send_ip_b, target_ip_b);
+//					frame.opcode = intToByte2(1);
+//					
+//					((ApplicationLayer) ApplicationLayer.m_LayerMgr.GetLayer("GUI")).setArpCache(cacheTable);
+//					}
 				}
 			return true;
 		} else if (ARP_Request == 2) { // ARP Reply

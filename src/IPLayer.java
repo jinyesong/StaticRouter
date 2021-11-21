@@ -103,6 +103,7 @@ public class IPLayer implements BaseLayer {
 		byte[] dst_ip = new byte[4];
 		System.arraycopy(input, 16, dst_ip, 0, 4);
 		byte[] src_ip = this.m_sHeader.ip_src.addr;
+		//System.out.println("제발 : " + dst_ip[2]);
 
 		int idx = this.RT.matchEntry(dst_ip);
 		ArrayList<byte[]> temp = RT.getEntry(idx);
@@ -110,21 +111,30 @@ public class IPLayer implements BaseLayer {
 
 		byte[] flag = temp.get(3);
 		if (flag[0] == 1 & flag[1] == 0 & flag[2] == 1) { // UH
-			this.m_sHeader.ip_dst.addr = dst_ip;
+			//this.m_sHeader.ip_dst.addr = dst_ip;
+			this.settingFrame(input, dst_ip);
 			int hasIp = ((ARPLayer) this.GetUnderLayer()).hasIpInCacheTable(
 					src_ip, dst_ip);
+			System.out.println(hasIp);
 			if (hasIp == -1) {
 				((ARPLayer) this.GetUnderLayer()).ARPSend(src_ip, dst_ip);
 			} else {
 				byte[] mac = ((ARPLayer) this.GetUnderLayer())
 						.getMacInCacheTable(hasIp);
 				((EthernetLayer) this.GetUnderLayer()).SetEnetDstAddress(mac);
-				this.secondeIPLayer.Send();
+				if(Byte.toUnsignedInt(temp.get(4)[0]) == this.port) { // 
+					this.Send();
+				}
+				else {
+					((EthernetLayer) this.secondeIPLayer.GetUnderLayer()).SetEnetDstAddress(mac);
+					this.secondeIPLayer.settingFrame(input, dst_ip);
+					this.secondeIPLayer.Send();
+				}
 			}
 
 		} else if (flag[0] == 1 & flag[1] == 1 & flag[2] == 0) { // UG
 			this.m_sHeader.ip_dst.addr = temp.get(2);
-
+			this.settingFrame(input, temp.get(2));
 			int hasIp = ((ARPLayer) this.GetUnderLayer()).hasIpInCacheTable(
 					src_ip, temp.get(2));
 			if (hasIp == -1) {
@@ -133,12 +143,20 @@ public class IPLayer implements BaseLayer {
 				byte[] mac = ((ARPLayer) this.GetUnderLayer())
 						.getMacInCacheTable(hasIp);
 				((EthernetLayer) this.GetUnderLayer()).SetEnetDstAddress(mac);
-				this.secondeIPLayer.Send();
+				if(Byte.toUnsignedInt(temp.get(4)[0]) == this.port) { // 
+					this.Send();
+				}
+				else {
+					((EthernetLayer) this.secondeIPLayer.GetUnderLayer()).SetEnetDstAddress(mac);
+					this.secondeIPLayer.settingFrame(input, temp.get(2));
+					this.secondeIPLayer.Send();
+				}
+				
 			}
 		}
 	}
 
-	public void settingFrame(byte[] input) { // header 채우는 함수
+	public void settingFrame(byte[] input, byte[] dst_ip) { // header 채우는 함수
 		// input의 헤더 옮기기(src_ip, dst_ip는 receive에서 넣었음)
 		// 1 byte 크기의 header 요소들
 		m_sHeader.ip_verlen = input[0];
@@ -146,14 +164,16 @@ public class IPLayer implements BaseLayer {
 		m_sHeader.ip_ttl = input[8];
 		m_sHeader.ip_proto = input[9];
 
+		m_sHeader.ip_len = this.intToByte2(input.length);
 		// 2 byte 크기의 header 요소들
 		for (int i = 0; i < 2; i++) {
-			m_sHeader.ip_len[i] = input[2 + i];
 			m_sHeader.ip_id[i] = input[4 + i];
 			m_sHeader.ip_fragoff[i] = input[6 + i];
 			m_sHeader.ip_cksum[i] = input[10 + i];
 		}
-
+		
+		this.m_sHeader.ip_dst.addr = dst_ip;
+		
 		// header의 data 부분
 		for (int i = 20; i < input.length; i++) {
 			m_sHeader.data[i] = input[i];
@@ -184,22 +204,30 @@ public class IPLayer implements BaseLayer {
 	public void secondIPLayerSet(IPLayer ip_layer) {
 		this.secondeIPLayer = ip_layer;
 	}
+	
+	private byte[] intToByte2(int value) {
+        byte[] temp = new byte[2];
+        temp[0] |= (byte) ((value & 0xFF00) >> 8);
+        temp[1] |= (byte) (value & 0xFF);
 
+        return temp;
+    }
 	public byte[] ObjToByte(_IP_HEADER Header) {//형을 byte[]로 변환
 		int length = byte2ToInt(Header.ip_len[0], Header.ip_len[1]); // 전체 ip 길이
 		byte[] buf = new byte[length];
-		
-		buf[0] = m_sHeader.ip_verlen;
-		buf[1] = m_sHeader.ip_tos;
-		buf[8] = m_sHeader.ip_ttl;
-		buf[9] = m_sHeader.ip_proto;
+		System.out.println("length: " + length);
+		//System.out.println(Header.ip_verlen);
+		buf[0] = Header.ip_verlen;
+		buf[1] = Header.ip_tos;
+		buf[8] = Header.ip_ttl;
+		buf[9] = Header.ip_proto;
 
 		// 2 byte 크기의 header 요소들
 		for (int i = 0; i < 2; i++) {
-			buf[2 + i] = m_sHeader.ip_len[i];
-			buf[4 + i] = m_sHeader.ip_id[i];
-			buf[6 + i] = m_sHeader.ip_fragoff[i];
-			buf[10 + i] = m_sHeader.ip_cksum[i];
+			buf[2 + i] = Header.ip_len[i];
+			buf[4 + i] = Header.ip_id[i];
+			buf[6 + i] = Header.ip_fragoff[i];
+			buf[10 + i] = Header.ip_cksum[i];
 		}
 		
 		// src_ip, dst_ip 부분
@@ -210,7 +238,7 @@ public class IPLayer implements BaseLayer {
 
 		// header의 data 부분
 		for (int i = 20; i < length; i++) {
-			buf[i] = m_sHeader.data[i];
+			buf[i] = Header.data[i];
 		}
 
 		return buf;
