@@ -205,7 +205,7 @@ public class ARPLayer implements BaseLayer {
 	         cache.add(intToByte2(1));  // cache[2]에  Complete넣기.1이면 complete.
 	         cacheTable.add(cache);
 	      }
-	      ((ARPDlg)ARPDlg.m_LayerMgr.GetLayer("GUI")).setArpCache(cacheTable);
+	      ((ApplicationLayer)ApplicationLayer.m_LayerMgr.GetLayer("GUI")).setArpCache(cacheTable);
 	      return true; 
 	   }
 
@@ -311,7 +311,7 @@ public class ARPLayer implements BaseLayer {
 					ARPSend(send_ip_b, target_ip_b);
 					frame.opcode = intToByte2(1);
 					
-					((ARPDlg) ARPDlg.m_LayerMgr.GetLayer("GUI")).setArpCache(cacheTable);
+					((ApplicationLayer) ApplicationLayer.m_LayerMgr.GetLayer("GUI")).setArpCache(cacheTable);
 					}
 				}
 			return true;

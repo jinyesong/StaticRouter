@@ -27,7 +27,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jnetpcap.PcapIf;
 
-public class ARPDlg extends JFrame implements BaseLayer {
+public class ApplicationLayer extends JFrame implements BaseLayer {
 
    public int nUpperLayerCount = 0;
    public String pLayerName = null;
@@ -108,7 +108,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
       m_LayerMgr.AddLayer(new ARPLayer("ARP2"));
       m_LayerMgr.AddLayer(new IPLayer("IP"));
       m_LayerMgr.AddLayer(new IPLayer("IP2"));
-      m_LayerMgr.AddLayer(new ARPDlg("GUI"));
+      m_LayerMgr.AddLayer(new ApplicationLayer("GUI"));
       
       m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *GUI ) ) +IP ( *GUI ) ) )  ^NI2 ( *Ethernet2 ( *ARP2 ( *IP2 ( *GUI ) ) +IP2 ( *GUI ) ) )");
       
@@ -249,7 +249,7 @@ public class ARPDlg extends JFrame implements BaseLayer {
 
    }
 
-   public ARPDlg(String pName) {
+   public ApplicationLayer(String pName) {
       pLayerName = pName;
 
       setTitle("Packet_Send_Test");
