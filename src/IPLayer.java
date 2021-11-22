@@ -215,7 +215,7 @@ public class IPLayer implements BaseLayer {
 	public boolean Send() { // 패킷송신
 		byte[] bytes = ObjToByte(m_sHeader);
 		int length = byte2ToInt(m_sHeader.ip_len[0], m_sHeader.ip_len[1]); // 전체 ip 길이
-		this.GetUnderLayer().Send(bytes, length);
+		this.GetUnderLayer().GetUnderLayer().Send(bytes, length);
 
 		return true;
 	}
