@@ -121,12 +121,12 @@ public class IPLayer implements BaseLayer {
 			} else {
 				byte[] mac = ((ARPLayer) this.GetUnderLayer())
 						.getMacInCacheTable(hasIp);
-				((EthernetLayer) this.GetUnderLayer()).SetEnetDstAddress(mac);
+				((EthernetLayer) this.GetUnderLayer().GetUnderLayer()).SetEnetDstAddress(mac);
 				if(Byte.toUnsignedInt(temp.get(4)[0]) == this.port) { // 
 					this.Send();
 				}
 				else {
-					((EthernetLayer) this.secondeIPLayer.GetUnderLayer()).SetEnetDstAddress(mac);
+					((EthernetLayer) this.secondeIPLayer.GetUnderLayer().GetUnderLayer()).SetEnetDstAddress(mac);
 					this.secondeIPLayer.settingFrame(input, dst_ip);
 					this.secondeIPLayer.Send();
 				}
@@ -142,12 +142,12 @@ public class IPLayer implements BaseLayer {
 			} else {
 				byte[] mac = ((ARPLayer) this.GetUnderLayer())
 						.getMacInCacheTable(hasIp);
-				((EthernetLayer) this.GetUnderLayer()).SetEnetDstAddress(mac);
+				((EthernetLayer) this.GetUnderLayer().GetUnderLayer()).SetEnetDstAddress(mac);
 				if(Byte.toUnsignedInt(temp.get(4)[0]) == this.port) { // 
 					this.Send();
 				}
 				else {
-					((EthernetLayer) this.secondeIPLayer.GetUnderLayer()).SetEnetDstAddress(mac);
+					((EthernetLayer) this.secondeIPLayer.GetUnderLayer().GetUnderLayer()).SetEnetDstAddress(mac);
 					this.secondeIPLayer.settingFrame(input, temp.get(2));
 					this.secondeIPLayer.Send();
 				}
