@@ -241,7 +241,7 @@ public class IPLayer implements BaseLayer {
 
 		// header의 data 부분
 		for (int i = 20; i < length; i++) {
-			buf[i] = Header.data[i];
+			buf[i] = Header.data[i-20];
 		}
 
 		return buf;
