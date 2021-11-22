@@ -99,7 +99,7 @@ public class IPLayer implements BaseLayer {
 		((ARPLayer) this.GetUnderLayer()).ARPSend(src, dst);
 	}
 
-	public void receive(byte[] input) { // 패킷 수신
+	public boolean Receive(byte[] input) { // 패킷 수신
 		byte[] dst_ip = new byte[4];
 		System.arraycopy(input, 16, dst_ip, 0, 4);
 		byte[] src_ip = this.m_sHeader.ip_src.addr;
@@ -131,7 +131,7 @@ public class IPLayer implements BaseLayer {
 					this.secondeIPLayer.Send();
 				}
 			}
-
+			return true;
 		} else if (flag[0] == 1 & flag[1] == 1 & flag[2] == 0) { // UG
 			this.m_sHeader.ip_dst.addr = temp.get(2);
 			this.settingFrame(input, temp.get(2));
@@ -153,7 +153,9 @@ public class IPLayer implements BaseLayer {
 				}
 				
 			}
+			return true;
 		}
+		return false;
 	}
 
 	public void settingFrame(byte[] input, byte[] dst_ip) { // header 채우는 함수

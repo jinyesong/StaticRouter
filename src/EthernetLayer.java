@@ -172,8 +172,6 @@ public class EthernetLayer implements BaseLayer {
 
 	public boolean Receive(byte[] input) {
 		byte[] data;
-		
-		//System.out.println("이더넷 input !!!"+input.length);
 		int temp_type = byte2ToInt(input[12], input[13]);
 		if(temp_type == Integer.decode("0x0806")) { //ARP packet
 			if(chkAddr(input) || !IsItMyPacket(input) || (IsItBroadcast(input))) {
