@@ -177,6 +177,7 @@ public class IPLayer implements BaseLayer {
 		this.m_sHeader.ip_dst.addr = dst_ip;
 		
 		// header의 data 부분
+		this.m_sHeader.data = new byte[input.length-20];
 		for (int i = 20; i < input.length; i++) {
 			m_sHeader.data[i] = input[i];
 		}
