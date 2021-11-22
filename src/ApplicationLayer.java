@@ -385,11 +385,11 @@ public class ApplicationLayer extends JFrame implements BaseLayer {
       
       routeAddButton.addActionListener(new setAddressListener());
       
-      up = new JCheckBox("up");
+      up = new JCheckBox("up",true);
       up.setBounds(100, 130, 50, 20);
-	  gateway = new JCheckBox("gateway", true);
+	  gateway = new JCheckBox("gateway");
 	  gateway.setBounds(150, 130, 80, 20);
-	  host = new JCheckBox("host");
+	  host = new JCheckBox("host",true);
 	  host.setBounds(230, 130, 100, 20);
 		
 	  routerAddPanel.add(up);
