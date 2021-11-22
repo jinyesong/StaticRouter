@@ -157,7 +157,36 @@ public class IPLayer implements BaseLayer {
 		}
 		return false;
 	}
+    public void ARPReplyToPacketSend(byte[] mac) {
+    	int idx = this.RT.matchEntry(this.m_sHeader.ip_dst.addr);
+		ArrayList<byte[]> temp = RT.getEntry(idx);
+		// 0:dst 1:netmask 2:gateway 3:flag 4:interface
+		
+		if(Byte.toUnsignedInt(temp.get(4)[0]) == this.port) { // 
+			this.Send();
+		}
+		else {
+			((EthernetLayer) this.secondeIPLayer.GetUnderLayer().GetUnderLayer()).SetEnetDstAddress(mac);
+			this.secondeIPLayer.settingFrame(this.m_sHeader, this.m_sHeader.ip_dst.addr);
+			this.secondeIPLayer.Send();
+		}
+    }
+    public void settingFrame(_IP_HEADER Header, byte[] dst_ip) { // header 채우는 함수
+		// input의 헤더 옮기기(src_ip, dst_ip는 receive에서 넣었음)
+		// 1 byte 크기의 header 요소들
+		m_sHeader.ip_verlen = Header.ip_verlen;
+		m_sHeader.ip_tos = Header.ip_tos;
+		m_sHeader.ip_ttl = Header.ip_ttl;
+		m_sHeader.ip_proto = Header.ip_proto;
 
+		m_sHeader.ip_len = Header.ip_len;
+		m_sHeader.ip_id = Header.ip_id;
+		m_sHeader.ip_fragoff = Header.ip_fragoff;
+		m_sHeader.ip_cksum = Header.ip_cksum;
+		m_sHeader.ip_dst.addr = dst_ip;
+		
+		m_sHeader.data = Header.data;
+	}
 	public void settingFrame(byte[] input, byte[] dst_ip) { // header 채우는 함수
 		// input의 헤더 옮기기(src_ip, dst_ip는 receive에서 넣었음)
 		// 1 byte 크기의 header 요소들

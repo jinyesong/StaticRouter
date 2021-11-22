@@ -322,7 +322,7 @@ public class ARPLayer implements BaseLayer {
 			// ip, mac변수에 setting -> Dlg에서 get해서 화면에 출력
 			addCacheTable(input);
 			//reply받으면 IPLayer로 Mac주소 전달 -> IPLayer에서 패킷 전달
-			((IPLayer)this.GetUpperLayer(0)).Send();
+			((IPLayer)this.GetUpperLayer(0)).ARPReplyToPacketSend(this.frame.target_mac.addr);
 			return true;
 		}
 		return false;
